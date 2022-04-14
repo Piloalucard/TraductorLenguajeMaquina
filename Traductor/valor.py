@@ -21,6 +21,7 @@ class Valor:
     def getNum(self):
         return self.tipo
     
+    
     def setLexema(self,c):
         self.lexema=c
 

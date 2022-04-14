@@ -7,18 +7,16 @@ class Lexico:
     _estado = 0
     _lista=[]
 
-    def __init__(self,f):
-        self._fuente=f+"$"
+    def __init__(self):
         self._ind=0
-        self.analisis()
 
     def getLista(self):
         return self._lista
 
 
-    def setFuente(self,f):
+    def addFuente(self,f):
         self._ind=0
-        self._fuente=f+"$"
+        self._fuente=self._fuente+f
 
     def obtLexico(self):
         auxcad="Lexema\tToken\t\tTipo\n"
@@ -28,6 +26,7 @@ class Lexico:
         return auxcad
 
     def analisis(self):
+        self._fuente=self._fuente+"$"
         while(self._estado == 0 and self._ind < len(self._fuente)):
             lexema=""
             token="Error"
@@ -223,17 +222,6 @@ class Lexico:
                             
                             v.setToken("Identificador")
                             v.setNum(0)
-							
-								
-							
-						
-						
-
-        
-
-                
-                    
-
 
     
     def __verLetra(self,i):
