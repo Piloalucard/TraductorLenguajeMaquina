@@ -1,5 +1,5 @@
-void main()
+void main(int x,int y)
 {
 	int a;
-	a=5;
+	int b;
 }

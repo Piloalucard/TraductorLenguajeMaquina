@@ -1,5 +1,6 @@
 from lexico import  Lexico
 from sintactico import Sintactico
+from nodo import Nodo
 import os
 import easygui
 import time
@@ -56,7 +57,7 @@ def main():
                 break
             codigo.append(linea)
         archivo.close()
-        clear()
+        print("")
         archivo=open(leer("de reglas",2),mode="r",encoding="utf-8")
         while(True):
             linea=archivo.readline()
@@ -84,10 +85,22 @@ def main():
         else:
             print(lex.obtLexico())
             sin = Sintactico(lista,reglas)
-            print(sin.analisis())
-        
 
-        
+            resultado,raiz=sin.analisis()
+            if(resultado != ""):
+                cont=1
+                for i in codigo:
+                    if(resultado in i):
+                        print("Se encontro un error de sintaxis en la linea: "+str(cont))
+                        print(i)
+                        break
+                    cont+=1
+            else:
+                print("Sintactico correcto")
+                
+                raiz.recorrer()
+                
+
         print("")
         print("")
         sal = int(input("    [D]igite 0 para repetir el programa si lo desea: "))
