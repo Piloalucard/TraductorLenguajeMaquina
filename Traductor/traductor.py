@@ -2,46 +2,41 @@ from lexico import  Lexico
 from sintactico import Sintactico
 from nodo import Nodo
 import os
-import tk
-
 import time
 
 def openFiles(msg,mode):
     if os.name == "ce" or os.name == "nt" or os.name == "dos":
-       import easygui
-       nombre=leer(msg,mode)
-       return nombre
+        import easygui
+        band=0
+        err=0
+        print("Elige tu archivo "+msg)
+        while band==0:
+            nombre=""
+            try:
+                if(mode==1):
+                    nombre=str(easygui.fileopenbox(msg="Selecciona archivo .den",title=None,default="*",filetypes=['*.den',"Denisse Files"],multiple=False))
+                elif(mode==2):
+                    nombre=str(easygui.fileopenbox(msg=None,title=None,default="*",filetypes=['*.lr'],multiple=False))
+                if nombre == "None":
+                    print("ERROR, No abriste un archivo\nSaliendo...")
+                    time.sleep(1.5)
+                    band=1
+                    err=1
+                else:
+                    print("Buena eleccion de archivo")
+                    band=1
+            except:
+                print("ERROR")
+                input()
+                band=0
+        if err==1:
+            exit()
+        else:
+            return nombre
+            
     nombre=input("Ingrese la ruta "+msg+": ")
     return str(nombre)
-
-
-def leer(msg,mode):
-    band=0
-    err=0
-    print("Elige tu archivo "+msg)
-    while band==0:
-        nombre=""
-        try:
-            if(mode==1):
-                nombre=str(easygui.fileopenbox(msg="Selecciona archivo .den",title=None,default="*",filetypes=['*.den',"Denisse Files"],multiple=False))
-            elif(mode==2):
-                nombre=str(easygui.fileopenbox(msg=None,title=None,default="*",filetypes=['*.lr'],multiple=False))
-            if nombre == "None":
-                print("ERROR, No abriste un archivo\nSaliendo...")
-                time.sleep(1.5)
-                band=1
-                err=1
-            else:
-                print("Buena eleccion de archivo")
-                band=1
-        except:
-            print("ERROR")
-            input()
-            band=0
-    if err==1:
-        exit()
-    else:
-        return nombre
+    
 
 def clear():
     if os.name == "posix":
