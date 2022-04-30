@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from valor import Valor
 from regla import Regla
 from nodo import Nodo
@@ -101,7 +100,7 @@ class Sintactico:
                 decaux.append(Valor("REGLAN","(R)",id))
                 modo=2
             else:
-                return self.lista[0].getLexema(),NULL
+                return self.lista[0].getLexema(),None
 
         antepenultimo=Nodo(-1,[],[])
         penultimo=Nodo(-1,[],[])

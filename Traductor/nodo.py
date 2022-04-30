@@ -1,7 +1,3 @@
-from asyncio.windows_events import NULL
-from logging import NullHandler
-
-
 class Nodo:
     noTerminales=[]
     regla=-1

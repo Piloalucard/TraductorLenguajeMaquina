@@ -2,8 +2,18 @@ from lexico import  Lexico
 from sintactico import Sintactico
 from nodo import Nodo
 import os
-import easygui
+import tk
+
 import time
+
+def openFiles(msg,mode):
+    if os.name == "ce" or os.name == "nt" or os.name == "dos":
+       import easygui
+       nombre=leer(msg,mode)
+       return nombre
+    nombre=input("Ingrese la ruta "+msg+": ")
+    return str(nombre)
+
 
 def leer(msg,mode):
     band=0
@@ -50,7 +60,7 @@ def main():
         #Lee los archivos
         codigo=[]
         reglas=[]
-        archivo=open(leer("de codigo",1),mode="r",encoding="utf-8")
+        archivo=open(openFiles("de codigo",1),mode="r",encoding="utf-8")
         while(True):
             linea=archivo.readline()
             if not linea: 
@@ -58,7 +68,7 @@ def main():
             codigo.append(linea)
         archivo.close()
         print("")
-        archivo=open(leer("de reglas",2),mode="r",encoding="utf-8")
+        archivo=open(openFiles("de reglas",2),mode="r",encoding="utf-8")
         while(True):
             linea=archivo.readline()
             if not linea: 
