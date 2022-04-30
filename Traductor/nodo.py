@@ -1,3 +1,5 @@
+from valor import Valor
+
 class Nodo:
     noTerminales=[]
     regla=-1
@@ -28,7 +30,7 @@ class Nodo:
         print("↓")
         print("Terminales:")
         for i in self.terminales:
-            print(str(i)+"\t",end="")    
+            print(str(i.getLexema())+"\t",end="")    
         print("")
         print("No Terminales:")
         for i in self.noTerminales:

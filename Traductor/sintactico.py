@@ -105,6 +105,7 @@ class Sintactico:
         antepenultimo=Nodo(-1,[],[])
         penultimo=Nodo(-1,[],[])
         ultimo=Nodo(-1,[],[])
+        
         for i in self.declaraciones:
             for j in i:
                 verificador=str(j.getToken())
@@ -146,7 +147,7 @@ class Sintactico:
                     #Terminales                
                     for ter in i:
                         if(ter != i[-1]):
-                            actual.addTerminal(ter.getLexema())
+                            actual.addTerminal(ter)
                     actual.revTerminales()
 
                     antepenultimo=penultimo

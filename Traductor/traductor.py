@@ -1,5 +1,6 @@
 from lexico import  Lexico
 from sintactico import Sintactico
+from semantico import Semantico
 from nodo import Nodo
 import os
 import time
@@ -55,7 +56,9 @@ def main():
         #Lee los archivos
         codigo=[]
         reglas=[]
-        archivo=open(openFiles("de codigo",1),mode="r",encoding="utf-8")
+        nom = openFiles("de codigo",1)
+        archivo=open(nom,mode="r",encoding="utf-8")
+        nomSinExt = nom.replace(".den","")
         while(True):
             linea=archivo.readline()
             if not linea: 
@@ -63,7 +66,7 @@ def main():
             codigo.append(linea)
         archivo.close()
         print("")
-        archivo=open(openFiles("de reglas",2),mode="r",encoding="utf-8")
+        archivo=open("compilador.lr",mode="r",encoding="utf-8")
         while(True):
             linea=archivo.readline()
             if not linea: 
@@ -101,9 +104,18 @@ def main():
                         break
                     cont+=1
             else:
-                print("Sintactico correcto")
                 
                 raiz.recorrer()
+                print("Sintactico correcto")
+                sem = Semantico(raiz)
+                tabsim,c = sem.analisis([],[" "])
+                tb=open(nomSinExt+".tabsim",mode="w",encoding="utf-8")
+                print(tabsim)
+                print(c)
+                for x in tabsim:
+                    tb.write(x+"\n")
+                tb.close
+
                 
 
         print("")
