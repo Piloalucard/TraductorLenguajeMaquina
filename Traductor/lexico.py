@@ -185,7 +185,7 @@ class Lexico:
         for v in self._lista:
             if(v.getToken() == "ID"):
                 lex=v.getLexema()
-                if(lex == "int" or lex == "float" or lex=="void" or lex =="bool" or lex == "string" or lex == "char"):
+                if(lex == "int" or lex == "float" or lex=="void" or lex == "string" or lex == "bool"):
                     v.setToken("Tipo de dato")
                     v.setNum(4)
                 elif(lex == "if"):
@@ -207,16 +207,16 @@ class Lexico:
                 else:
                     try:
                         a=int(lex)
-                        v.setToken("Entero")
+                        v.setToken("int")
                         v.setNum(1)
                     except:
                         try:
                             a=float(lex)
-                            v.setToken("Real")
+                            v.setToken("float")
                             v.setNum(2)
                         except:	
                             if(self.__verNum(lex[0])):
-                                v.setToken("Cadena")
+                                v.setToken("string")
                                 v.setNum(3)
                                 continue
                             

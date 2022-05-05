@@ -1,9 +1,9 @@
 from valor import Valor
 
 class Nodo:
-    noTerminales=[]
+    noTerminales=[]#Nodos
     regla=-1
-    terminales=[]
+    terminales=[]#Valores
 
     def __init__(self,regla,noTer,Ter):
         self.regla=regla
@@ -33,6 +33,7 @@ class Nodo:
             print(str(i.getLexema())+"\t",end="")    
         print("")
         print("No Terminales:")
+        self.noTerminales.reverse()
         for i in self.noTerminales:
             print("R"+str(i.getRegla())+"\t",end="")
 

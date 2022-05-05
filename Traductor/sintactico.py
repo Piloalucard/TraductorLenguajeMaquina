@@ -8,7 +8,6 @@ class Sintactico:
     reglas=[]
     tabla=[[]]
     pila=[]
-    declaraciones=[]
 
     def __init__(self,l,archivo):
         self.lista=l
@@ -16,8 +15,7 @@ class Sintactico:
         self.reglas=[]
         self.tabla=[[]]
         self.pila=[]
-        self.declaraciones=[]
-        self.pila.append(0)
+        self.pila.append(Valor("D","D",0))
         self.decodeLR()
     
     def decodeLR(self):
@@ -32,6 +30,7 @@ class Sintactico:
         filas=int(aux1[0])
         columnas=int(aux1[1]) #Obtiene las filas y columnas del siguiente renglon
         self.tabla = [[0 for x in range(columnas)] for y in range(filas)] #Con las filas y columnas rellena la matriz de 0
+
         inicio=nreglas+1
 
         fila=0
@@ -43,30 +42,22 @@ class Sintactico:
     
     def analisis(self):
         modo=1 #Para saber si lo anterior fue una regla o un desplazamiento
-        decaux=[]
+        arbol=[]
         while(True):
             if(modo==1): #Si fue un desplazamiento toma la fila del desplazamiento y la columna del siguiente token de la lista
-                fila=self.pila[-1]
+                fila=self.pila[-1].getNum()
                 columna=self.lista[0].getNum()
             else: #Si fue una regla, toma el ultimo desplazamiento y la regla
-                fila=self.pila[-2]
-                columna=self.pila[-1]
+                fila=self.pila[-2].getNum()
+                columna=self.pila[-1].getNum()
             
             actual=int(self.tabla[fila][columna])
 
             if(actual >= 1): #Los numeros positivos en la matriz son desplazamientos
                 if(modo == 1): #Si lo ultimo fue un desplazamiento, se mete a la pila el token actual primero de la lista 
-                    #y el desplazamiento
-                    decaux.append(self.lista[0])
-                    self.pila.append(self.lista.pop(0).getNum())
-                    self.pila.append(actual)
-                    decaux.append(Valor("DESN","(D)",actual))
-                else: #Si lo ultimo fue una regla, solo el desplazamiento
-                    self.pila.append(actual)
-                    decaux.append(Valor("DESN","(D)",actual))
-                #Para simplicidad, la iteracion de la pila solo se hace con enteros
-                #Sin embargo se necesita del valor completo de los token para lo semantico
-                #Se crea una lista copia con los valores,y si encuentra una regla o desplazamiento, lo mete como clase Valor
+                    self.pila.append(self.lista.pop(0))
+
+                self.pila.append(Valor("D","D",actual))
                 modo=1
                 
             elif(actual <= -1): #Las reglas son negativas
@@ -76,87 +67,49 @@ class Sintactico:
                 lon=reglaActual.getLon()*2
                 id=reglaActual.getId()
 
-                
-                #Crear arbol
-                
-                final=[]
-                #Si encuentra una regla para el analisis semantico donde se declaren cosas
-                #Se metera en una lista todos los tokens de esa regla y su regla 
-                #Toda esa lista, se mete en otra lista, que seran las declaraciones
-                for i in range(lon):
-                    verificador=str(decaux[-1].getToken())
-                    if(verificador != "(R)" and verificador != "(D)"):
-                        final.append(Valor(decaux[-1].getLexema(),decaux[-1].getToken(),decaux[-1].getNum()))
-                    decaux.pop()
 
-                auxV=Valor("(REGLA "+str(r+1)+")","(R)",r+1)
-                final.append(auxV)
-                self.declaraciones.append(final)
+                #Crea el nodo y anade los terminales
+                myNodo=Nodo(-1,[],[])
+                for i in range(lon):
+                    aux = self.pila.pop()
+                    if(aux.getToken() != "R" and aux.getToken() != "D"):
+                        myNodo.addTerminal(aux)
+                
+
+                num=r+1
+                #NoTerminales
+                #Reglas sin nada:
+                #2,7,10,12,15,19,26,29,31,33 (10)
+
+                #Con uno (24)
+                anadidos=False
+                reglasUno=[1,4,5,6,8,11,13,14,17,18,21,24,25,27,28,30,35,40,41,42,43,44,45,52]
+                #Con Dos (13)
+                reglasDos=[3,9,16,20,23,32,34,46,47,48,49,50,51]
+                if(num in reglasUno):
+                    myNodo.addNoTerminal(arbol.pop(-1))
+                elif(num in reglasDos):
+                    myNodo.addNoTerminal(arbol.pop(-1))
+                    myNodo.addNoTerminal(arbol.pop(-1))
+                elif(num==22): #El unico de 3
+                    myNodo.addNoTerminal(arbol.pop(-1))
+                    myNodo.addNoTerminal(arbol.pop(-1))
+                    myNodo.addNoTerminal(arbol.pop(-1))
+
+                myNodo.setRegla(num)
+                myNodo.revTerminales()
+                arbol.append(myNodo)
                 if(r==0):
                     break
-                for i in range(lon):
-                    self.pila.pop()
-                self.pila.append(id)
-                decaux.append(Valor("REGLAN","(R)",id))
+
+                
+                self.pila.append(Valor(str(r+1),"R",id))
                 modo=2
             else:
                 return self.lista[0].getLexema(),None
 
-        antepenultimo=Nodo(-1,[],[])
-        penultimo=Nodo(-1,[],[])
-        ultimo=Nodo(-1,[],[])
-        
-        for i in self.declaraciones:
-            for j in i:
-                verificador=str(j.getToken())
-                if(verificador == "(R)"):
-                    num=int(j.getNum())
-                    
-                    #No contienen nada y no entran a ningun if
-                    #Reglas:
-                    #2,7,10,12,15,19,26,29,31,33 (10)
-                    actual=Nodo(num,[],[])
 
-                    #NoTerminales
-                    #Con uno (24)
-                    anadidos=False
-                    reglasUno=[1,4,5,6,8,11,13,14,17,18,21,24,25,27,28,30,35,40,41,42,43,44,45,52]
-                    for n in reglasUno:
-                        if(num==n):
-                            actual.addNoTerminal(Nodo(ultimo.getRegla(),ultimo.getNoTerminales(),ultimo.getTerminales()))
-                            anadidos=True
-                            break
-
-                    #Con Dos (13)
-                    reglasDos=[3,9,16,20,23,32,34,46,47,48,49,50,51]
-                    if(not anadidos):
-                        for n in reglasDos:
-                            if(num==n):
-                                actual.addNoTerminal(Nodo(ultimo.getRegla(),ultimo.getNoTerminales(),ultimo.getTerminales()))
-                                actual.addNoTerminal(Nodo(penultimo.getRegla(),penultimo.getNoTerminales(),penultimo.getTerminales()))
-                                anadidos=True
-                                break
-                    
-                    #Con Tres
-                    if(num==22):
-                        actual.addNoTerminal(Nodo(ultimo.getRegla(),ultimo.getNoTerminales(),ultimo.getTerminales()))
-                        actual.addNoTerminal(Nodo(penultimo.getRegla(),penultimo.getNoTerminales(),penultimo.getTerminales()))
-                        actual.addNoTerminal(Nodo(antepenultimo.getRegla(),antepenultimo.getNoTerminales(),antepenultimo.getTerminales()))
-                             
-
-                    #Terminales                
-                    for ter in i:
-                        if(ter != i[-1]):
-                            actual.addTerminal(ter)
-                    actual.revTerminales()
-
-                    antepenultimo=penultimo
-                    penultimo=ultimo
-                    ultimo=actual
-
-
-        
-        return "",ultimo
+        return "",arbol[0]
         
 
         
