@@ -73,7 +73,7 @@ def main():
     try:
         archivo = open("compilador.lr", mode="r", encoding="utf-8")
     except:
-        archivo = open("/home/gustavo/SemTradLeng2/Traductor/compilador.lr", mode="r", encoding="utf-8")
+        archivo = open("./Traductor/compilador.lr", mode="r", encoding="utf-8")
     
     while(True):
         linea = archivo.readline()
@@ -110,36 +110,34 @@ def main():
                 if(resultado in i):
                     print("Se encontro un error de sintaxis en la linea: "+str(cont))
                     print(i)
-                    break
+                    return
                 cont += 1
-        else:
-            print("---------------------------------------------------")
-            print("Sintactico correcto")
-            print("---------------------------------------------------")
-            raiz.recorrer()
-            print("")
-            sem = Semantico(raiz)
-            tabsim, c, errors = sem.analisis()
-            if(tabsim[0] == "Error semantico en: " or tabsim[0] == "\t\tError semantico en: "):
-                print(tabsim[0]+tabsim[1],end="")
-                return
-            print("")
+        print("---------------------------------------------------")
+        print("Sintactico correcto")
+        print("---------------------------------------------------")
+        raiz.recorrer()
+        print("")
+        sem = Semantico(raiz)
+        tabsim = sem.analisis()
+        if(tabsim[0] == "Error semantico en: "):
+            print(tabsim[0]+tabsim[1], end="")
+            return
+        print("")
+        print("---------------------------------------------------")
+        print("Semantico correcto")
+        print("---------------------------------------------------")
+        tb = open(nomSinExt+".tabsim", mode="w", encoding="utf-8")
 
-            print("---------------------------------------------------")
-            print("Semantico correcto")
-            print("---------------------------------------------------")
-            tb = open(nomSinExt+".tabsim", mode="w", encoding="utf-8")
-            
-            for line in tabsim:
-                print(line)
+        for line in tabsim:
+            print(line)
 
-            for x in tabsim:
-                tb.write(x+"\n")
-            tb.close
+        for x in tabsim:
+            tb.write(x+"\n")
+        tb.close
 
-            print("")
-            print("")
-            print("    [T]raduccion realizada con exito! ",end="")
+        print("")
+        print("")
+        print("    [T]raduccion realizada con exito! ", end="")
             
 
 main()

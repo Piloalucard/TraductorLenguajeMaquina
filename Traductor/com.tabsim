@@ -1,7 +1,8 @@
+int	premain	 
+int	y	premain
+bool	x	premain
 void	main	 
-int	p	main
-int	q	main
 float	a	main
 int	b	main
-int	premain	 
-int	x	premain
+int	p	main
+int	q	main
