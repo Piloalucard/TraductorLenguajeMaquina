@@ -206,12 +206,12 @@ class Lexico:
                     
                 else:
                     try:
-                        a=int(lex)
+                        int(lex)
                         v.setToken("int")
                         v.setNum(1)
                     except:
                         try:
-                            a=float(lex)
+                            float(lex)
                             v.setToken("float")
                             v.setNum(2)
                         except:	

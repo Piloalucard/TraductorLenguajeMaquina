@@ -1,0 +1,411 @@
+
+
+                                   UTIL.LIB Procedures
+
+        Library for use with "Assembly Language for the IBM PC Family"
+        by William B. Jones, (c) Copyright 1992, 1997, 2001, Scott/Jones, Inc.
+
+This document describes the contents of the library UTIL.LIB on this disk and
+how they are used.  In order to use an item in this library, UTIL.LIB must be
+linked in with your executable code using one of the following commands:
+
+         tlink object files,,,util         (TASM)
+         link object files,,,util;         (MASM)
+         ml source files util.lib          (MASM 6.0 and above)
+
+Bin2Dec         (procedure)
+
+Translate a signed 16 bit binary number into its decimal representation as
+a string of ASCII characters at a specified memory location.
+
+usage:
+
+         Input:  ax = number to be converted
+                 ds:di = location of start of output character string
+
+         EXTRN   Bin2Dec : NEAR
+         call    Bin2Dec
+
+         Output: ds:di = location of first character after output
+
+         All registers except ax and di are preserved
+
+CCheck          (procedure)
+
+Called immediately following a DOS function call which returns with the C
+flag set if there was an error and the error number in ax.  If the C flag
+is set, CCheck displays an appropriate error message and terminates the
+program.
+
+usage:
+
+         ...
+         int     21h      ; DOS call
+         EXTRN   CCheck : NEAR
+         call    CCheck
+
+         If the DOS call showed an error, no return.  If not, returns with
+all registers preserved.
+
+DBin2Dec        (procedure)
+
+Similar to Bin2Dec, except that a 32 bit integer in eax is translated into
+a decimal character string.
+
+usage:
+
+         Input:  eax = number to be converted
+                 ds:di = location of start of output character string
+
+         EXTRN   DBin2Dec : NEAR
+         call    DBin2Dec
+
+         Output: ds:di = location of first character after output
+
+         All registers except eax and di are preserved
+
+Dec2Bin         (procedure)
+
+Translate an ASCII character string representing a signed decimal number
+into its binary equivalent, returning that value and the location of the
+first character after the end of the string translated.
+
+usage:
+
+         Input:  ds:si = location of start of character string to
+                         translate
+
+         EXTRN   Dec2Bin : NEAR
+         call    Dec2Bin 
+
+         Output: If C Flag is clear, translation was successful and
+                    ax = value
+                    ds:si = location of first character after input
+                 if C Flag is set, an error occurred (overflow, no number,
+                    etc.) ds:si = location at which error was found.
+
+         All registers except ax and si are preserved
+
+Dec2DBin        (procedure)
+
+Similar to Dec2Bin, except that a 32 bit integer is returned in eax.
+
+usage:
+
+         Input:  ds:si = location of start of character string to
+                         translate
+
+         EXTRN   Dec2DBin : NEAR
+         call    Dec2DBin 
+
+         Output: If C Flag is clear, translation was successful and
+                    eax = value
+                    ds:si = location of first character after input
+                 if C Flag is set, an error occurred (overflow, no number,
+                    etc.) ds:si = location at which error was found.
+
+         All registers except eax and si are preserved
+
+Dec2FP      (procedure)
+
+Translate an ASCII character string representing a signed floating
+point number into its binary floating point equivalent, returning the
+value on the FPU stack and the location of the first character after
+the end of the string translated.
+
+usage:
+
+    Input:  ds:si = location of start of character string to
+            translate
+        three empty entries on FPU stack required
+
+    EXTRN   Dec2FP : NEAR
+    call    Dec2FP
+
+    OutPut: If C flag is clear, translation was successful and
+           FPU stack top ST = pushed value
+           ds:si = location of first character after input
+        If C flag is set, an error occurred (overflow, no
+        number, etc.) ds:si = location at which error was found.
+
+    All registers except si are preserved.
+
+GetDDec         (procedure)
+
+Read a signed decimal number from the keyboard as a 32 bit integer, with echo
+and full keyboard editing.
+
+usage:
+
+         EXTRN   GetDDec : NEAR
+         call    GetDDec
+
+         Output: If C Flag is clear, a legal number was read
+                    eax = value
+                 if C Flag is set, an error occurred (overflow, no number,
+                    etc.)
+
+         All registers except eax are preserved
+
+GetDec          (procedure)
+
+Read a signed decimal number from the keyboard, with echo and full keyboard
+editing.
+
+usage:
+
+         EXTRN   GetDec : NEAR
+         call    GetDec
+
+         Output: If C Flag is clear, a legal number was read
+                    ax = value
+                 if C Flag is set, an error occurred (overflow, no number,
+                    etc.)
+
+         All registers except ax are preserved
+
+GetFP       (prodecure)
+
+Read a signed real number from the keyboard, with echo and full
+keyboard editing.
+
+usage:
+        three empty entries on FPU stack required
+
+    EXTRN   GetFP : NEAR
+    call    GetFP
+
+    Output: If C Flag is clear, a legal number was read
+           ST = top of FPU stack has pushed value
+        If C Flag is set, an error occurred (overflow, no
+           number, etc.)
+
+    All registers are preserved.
+
+
+GetMem          (procedure)
+
+Allocate a block of memory.
+
+usage:
+
+         Input:  ax = number of bytes of memory requested
+
+         EXTRN   GetMem : NEAR
+         call    GetMem
+
+         Output: es:bx points to the memory block allocated.  If bx = 0,
+                    not enough memory was available.
+
+         All registers except ax, bx, and es are preserved
+
+FP2Dec         (procedure)
+
+Translate a the floating point number on top of the FPU stack to
+a string of ASCII characters at a specified memory location.
+
+usage:
+
+         Input:  FPU ST = number to be converted
+                 es:di = location of start of output character string
+
+         EXTRN   FP2Dec : NEAR
+         call    FP2Dec
+
+         Output: es:di = location of first character after output
+         ST is popped off of FPU stack
+
+         All registers except di are preserved
+
+MPPutDec        (procedure)
+
+Display an unsigned multiple-precision binary number as a decimal number.
+
+usage:
+
+         push    segment of number
+         push    offset of number
+         push    number of double words in number
+         EXTRN   MPPutDec : NEAR
+         call    MPPutDec
+
+         Output: Number is displayed and parameters are popped
+
+         Only sp, bp, and ds are preserved
+
+ParseCmd        (procedure)
+
+Returns a pointer to the next command line argument in es:si.  (Arguments
+are separated by blanks or tabs.)  That argument has been null-terminated
+as part of the scanning process.  When all command-line arguments have been
+returned, returns si = 0.  Uses DOS get PSP call for DOS version 3.0 and
+above.  If a lower version is in use, assumes the PSP segment is in es and
+displays a warning message to that effect.
+
+usage:
+
+         EXTRN   ParseCmd : NEAR
+         call    ParseCmd 
+
+         Output: es:si is the location of the start of the next command
+                 line argument, which has been null-terminated.  If all
+                 arguments have been processed, returns si = 0. 
+
+         All registers except si and es are preserved
+
+PutCStr          (procedure)
+
+Output a C-type string (0-terminated) to the CRT screen.
+
+usage:
+
+         Input:  ds:si points to the first character of the C string
+
+         EXTRN   PutCStr : NEAR
+         call    PutCStr 
+
+         All registers are preserved
+
+PutDDec         (procedure)
+
+Display a 32 bit signed binary number as a decimal number on the CRT screen.
+
+usage:
+
+         Input:  eax = the number to be displayed
+
+         EXTRN   PutDDec : NEAR
+         call    PutDDec
+
+         All registers are preserved
+
+PutDec          (procedure)
+
+Display a signed binary number as a decimal number on the CRT screen.
+
+usage:
+
+         Input:  ax = the number to be displayed
+
+         EXTRN   PutDec : NEAR
+         call    PutDec
+
+         All registers are preserved
+
+PutDHex         (procedure)
+
+Display an unsigned 32 bit binary number as eightr hex digits on the 
+CRT screen.
+
+usage:
+
+         Input:  eax = the number to be displayed
+
+         EXTRN   PutDHex : NEAR
+         call    PutDHex
+
+         All registers except ax are preserved
+
+PutFP       (procedure)
+
+Display a floating point number as a decimal number on the CRT
+screen.
+
+usage:
+
+    Input:  FPU stack top ST = the number to be displayed
+
+    EXTRN   PutFP : NEAR
+    call    PutFP
+
+    OutPut: The FPU stack has been popped
+
+    All registers are preserved
+
+PutHex          (procedure)
+
+Display an unsigned binary number as four hex digits on the CRT screen.
+
+usage:
+
+         Input:  ax = the number to be displayed
+
+         EXTRN   PutHex : NEAR
+         call    PutHex
+
+         All registers except ax are preserved
+
+PutUDec         (procedure)
+
+Display an unsigned binary number as a decimal number on the CRT screen.
+
+usage:
+
+         Input:  ax = the number to be displayed
+
+         EXTRN   PutUDec : NEAR
+         call    PutUDec
+
+         All registers except ax are preserved
+
+Random          (procedure)
+
+Return a double-precision integer which is a uniformly distributed pseudo-
+random number in the range 0 < value < 2**31 - 1 using the 'minimal standard'
+procedure.
+
+usage:
+
+         EXTRN   Random : NEAR
+         call    Random
+
+         OutPut: eax contains the (pseudo) random number
+
+         eax, bx, edx, si, and di are destroyed
+
+Timer           (procedure)
+
+Returns the number of clock ticks since the last time it was called (at about
+18.2 clock ticks per second). The first time it is called, it returns the
+number of clock ticks since midnight.
+
+usage:
+
+         EXTRN   Timer : NEAR
+         call    Timer
+         Output: dx:ax = double precision number of ticks
+
+         All registers except ax, dx, and es are preserved
+
+UpIt            (Array)
+
+Array used for quick translation of lower case letters to the corresponding
+upper case letter while leaving all other characters unchanged
+
+usage:
+
+         EXTRN   UpIt : BYTE ;    must be in .DATA segment
+         ...
+         mov     bx, OFFSET UpIt ;         ds must contain @data
+         mov     al, byte to translate
+         xlat
+WCheck          (procedure)
+
+Like CCheck, except to be called after a DOS file write operation in which
+it is also to be checked that the requested number of bytes were written.
+Compares ax, the actual number of bytes written, to cx, the number re-
+quested, and if not equal, terminates the program with an error message.  If
+the correct number of bytes was written, calls CCheck and returns to caller if
+CCheck returns.
+
+usage:
+
+         ...
+         int     21h      ; DOS Write call
+         EXTRN   WCheck : NEAR
+         call    WCheck
+
+         If the DOS call showed an error or the number of bytes written was
+unequal to the number requested, no return.  If no error was detected, returns
+with all registers preserved.
+
