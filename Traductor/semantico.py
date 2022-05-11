@@ -7,9 +7,10 @@ class Semantico:
     def __init__(self,raiz):
         self.raiz = raiz
 
-    def preAnalisis(self,t,c,lft,lfn,lcft):
+    def preAnalisis(self,t,c,a,lft,lfn,lcft):
         tabsim=t
         context=c
+        assembler=a
         ter=self.raiz.getTerminales()
         noter=self.raiz.getNoTerminales()
         regla=self.raiz.getRegla()
@@ -36,7 +37,9 @@ class Semantico:
                     aux=p1+"\t"+p2+"\t "
                 else:
                     aux=p1+"\t"+p2+"\t"+p3
+                
                 if(regla==9):
+                    assembler.append(p2+":")
                     lastFuncType=p1
                     lastFuncName=p2
                 for var in tabsim:
@@ -44,8 +47,9 @@ class Semantico:
                     if(p2 == removedTabs[1]):
                         if(p3 == removedTabs[2]):
                             exception = p1 + " "+ p2 + " En " + p3 + " Ya esta declarado " + " Regla #" + str(regla)
-                            return ["Error semantico en: ",exception],[]
+                            return ["Error semantico en: ",exception],[],[]
                 tabsim.append(aux)
+                
             elif(regla == 8):
                 splittb = tabsim[-1].split("\t")
                 p1=splittb[0]
@@ -57,7 +61,7 @@ class Semantico:
                     if(p2 == removedTabs[1]):
                         if(p3 == removedTabs[2]):
                             exception = p1 + " "+ p2 + " En " + p3 + " Ya esta declarado " + " Regla #" + str(regla)
-                            return ["Error semantico en: ",exception],[]
+                            return ["Error semantico en: ",exception],[],[]
                 tabsim.append(aux)
             elif(regla == 13):
                 p1=ter[1].getLexema()
@@ -69,10 +73,9 @@ class Semantico:
                     if(p2 == removedTabs[1]):
                         if(p3 == removedTabs[2]):
                             exception = p1 + " "+ p2 + " En " + p3 + " Ya esta declarado " + " Regla #" + str(regla)
-                            return ["Error semantico en: ",exception],[]
+                            return ["Error semantico en: ",exception],[],[]
                 tabsim.append(aux)
 
-            #Aqui empieza redesign
             elif(regla == 21):
                 error1=1
                 error2=1
@@ -133,7 +136,7 @@ class Semantico:
                             error1 = 3
                 if(error2 == 1):
                     exception = "<"+termino2.getLexema() + "> Variable no declarada Regla #" + str(regla)
-                    return ["Error semantico en: ",exception],[]
+                    return ["Error semantico en: ",exception],[],[]
 
                 if(error1 > 0):
                     if(error1 == 1):
@@ -142,7 +145,7 @@ class Semantico:
                         exception="<"+termino1.getLexema()+"> <"+termino2.getLexema()+"> Variable y termino de asignacion son de diferente tipo de dato Regla #" + str(regla)
                     if(error1 == 3):
                         exception="<"+termino1.getLexema()+"> <"+termino2.getLexema()+"> Variables definidas en diferentes contextos Regla #" + str(regla)
-                    return ["Error semantico en: ",exception],[]
+                    return ["Error semantico en: ",exception],[],[]
                 
             elif(regla == 24):
                 error1=1
@@ -201,60 +204,72 @@ class Semantico:
                         exception="<"+termino1.getLexema()+"> <"+lastFuncType+"> Variable del return y Funcion no son del mismo tipo de dato o no estan definidas Regla #" + str(regla)
                     if(error1 == 3):
                         exception="<"+termino1.getLexema()+"> <"+lastFuncName+"> Variable del return definida en diferente contexto Regla #" + str(regla)
-                return ["Error semantico en: ",exception],[]
+                return ["Error semantico en: ",exception],[],[]
 
             elif (regla == 40):
                 error=1
                 id=ter[0].getLexema()
-
-                args=[]
-                for nodoaux in noter:
-                    r1=nodoaux.getRegla()
-                    while(r1 != 52):
-                        nodoaux=nodoaux.getNoTerminales()[0]
-                        r1=nodoaux.getRegla()
+                print(id)
+                if(id == "print"):
                     try:
-                        args.append(nodoaux.getNoTerminales()[0].getTerminales()[0])
-                    except: 
-                        args.append(self.obtFType(lastCallFType))
-                for var in tabsim:
-                    removedTabs = var.split("\t")
-                    if(id == removedTabs[1]):
-                        lastCallFType=removedTabs[0]
-                        error=0
-                if(error == 1):
-                    exception="<"+id+"> Funcion no definida Regla #" + str(regla)
-                    return ["Error semantico en: ",exception],[]
-                
-
-                for arg in args:
-                    try:
-                        int(id)
+                        msg = noter[0].getNoTerminales()[0].getNoTerminales()[0].getTerminales()[0].getLexema()
                     except:
+                        aux='" "'
+                    aux=msg+'\tprint\t'+lastFuncName
+                    assembler.append("\tlea dx,"+msg.replace('"',''))
+                    assembler.append("\tmov ah,9")
+                    assembler.append("\tint 21h")
+                    assembler.append(aux)
+                else:    
+                    args=[]
+                    for nodoaux in noter:
+                        r1=nodoaux.getRegla()
+                        while(r1 != 52):
+                            nodoaux=nodoaux.getNoTerminales()[0]
+                            r1=nodoaux.getRegla()
                         try:
-                            float(id)
-                        except:
-                            if(id != "true" and id != "false"):
-                                if(id != '"'):
-                                    id=arg.getLexema()
-                                    error=5
-                                    for var in tabsim:
-                                        removedTabs = var.split("\t")
-                                        if(id == removedTabs[1]):
-                                            error=0
-                                            aux=removedTabs[2]
-                                    if(error == 5):
-                                        exception="<"+id+"> Atributo no existe Regla #" + str(regla)
-                                        return ["Error semantico en: ",exception],[]
-                                    
-                                    error=3
-                                    if(lastFuncName == aux):
-                                        error=0
+                            args.append(nodoaux.getNoTerminales()[0].getTerminales()[0])
+                        except: 
+                            args.append(self.obtFType(lastCallFType))
+            
+                    for var in tabsim:
+                        removedTabs = var.split("\t")
+                        if(id == removedTabs[1]):
+                            lastCallFType=removedTabs[0]
+                            error=0
+                    if(error == 1):
+                        exception="<"+id+"> Funcion no definida Regla #" + str(regla)
+                        return ["Error semantico en: ",exception],[],[]
+                    
 
-                                    if(error == 3):
-                                        exception="<"+id+"> Variable en el argumento no definida Regla #" + str(regla)
-                                        return ["Error semantico en: ",exception],[]
-                
+                    for arg in args:
+                        try:
+                            int(id)
+                        except:
+                            try:
+                                float(id)
+                            except:
+                                if(id != "true" and id != "false"):
+                                    if(id != '"'):
+                                        id=arg.getLexema()
+                                        error=5
+                                        for var in tabsim:
+                                            removedTabs = var.split("\t")
+                                            if(id == removedTabs[1]):
+                                                error=0
+                                                aux=removedTabs[2]
+                                        if(error == 5):
+                                            exception="<"+id+"> Atributo no existe Regla #" + str(regla)
+                                            return ["Error semantico en: ",exception],[],[]
+                                        
+                                        error=3
+                                        if(lastFuncName == aux):
+                                            error=0
+
+                                        if(error == 3):
+                                            exception="<"+id+"> Variable en el argumento no definida Regla #" + str(regla)
+                                            return ["Error semantico en: ",exception],[],[]
+                    
 
             elif (regla == 44):
                 error=1
@@ -291,7 +306,7 @@ class Semantico:
                         exception="<"+termino1.getLexema()+"> Variable no definida Regla #" + str(regla)
                     elif(error == 4):
                         exception="<"+termino1.getLexema()+"> Variable no es tipo bool Regla #" + str(regla)
-                    return ["Error semantico en: ",exception],[]
+                    return ["Error semantico en: ",exception],[],[]
 
             elif (regla == 45):
                 error=1
@@ -322,7 +337,7 @@ class Semantico:
                         exception="<"+termino1.getLexema()+"> Variable no definida Regla #" + str(regla)
                     elif(error == 4):
                         exception="<"+termino1.getLexema()+"> Variable no es tipo int o float Regla #" + str(regla)
-                    return ["Error semantico en: ",exception+" Regla #"+str(regla)],[]
+                    return ["Error semantico en: ",exception+" Regla #"+str(regla)],[],[]
 
             elif(regla >= 46 and regla <=51):
                 error=1
@@ -424,20 +439,20 @@ class Semantico:
                         exception="<"+termino1.getLexema()+"> <"+termino2.getLexema()+"> Variables son de diferente tipo de dato o no estan definidas Regla #" + str(regla)
                     elif(error == 4):
                         exception="<"+termino1.getLexema()+"> Variable no es tipo int o float Regla #" + str(regla)
-                    return ["Error semantico en: ",exception],[],
+                    return ["Error semantico en: ",exception],[],[]
 
 
             for i in noter:
                 provis = Semantico(i)
-                tabsim,context = provis.preAnalisis(tabsim,context,lastFuncType,lastFuncName,lastCallFType)
+                tabsim,context,assembler = provis.preAnalisis(tabsim,context,assembler,lastFuncType,lastFuncName,lastCallFType)
         except:
             pass
 
-        return tabsim,context
+        return tabsim,context,assembler
 
     def analisis(self):
-        tabsim,context = self.preAnalisis([],[" "]," "," "," ")
-        return tabsim
+        tabsim,context,assembler = self.preAnalisis([],[" "],[]," "," "," ")
+        return tabsim,assembler
     
     def obtFType(self,cadena):
         if(cadena == "int"):

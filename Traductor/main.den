@@ -1,0 +1,10 @@
+int premain(int y){
+    bool x;
+}
+
+void main(float a,int b){
+    int p,q;
+    p=q;
+    premain(p);
+    print("Hola-mundo");
+}

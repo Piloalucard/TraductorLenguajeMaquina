@@ -225,7 +225,7 @@ class Lexico:
 
     
     def __verLetra(self,i):
-        if ord(i) >= 65 and ord(i) <= 122:
+        if (ord(i) >= 65 and ord(i) <= 122) or ord(i) == 45 or ord(i) == 34 or ord(i) == 39:
             return True
         else:
             return False
