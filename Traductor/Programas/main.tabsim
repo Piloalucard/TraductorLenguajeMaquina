@@ -1,6 +1,6 @@
 int	premain	 
 int	y	premain
-bool	x	premain
+int	x	premain
 void	main	 
 float	a	main
 int	b	main

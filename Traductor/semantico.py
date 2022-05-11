@@ -1,5 +1,8 @@
+from cmath import exp
 from valor import Valor
 from nodo import Nodo
+import random
+import string  
 
 class Semantico:
     raiz=Nodo(-1,[],[])
@@ -7,7 +10,7 @@ class Semantico:
     def __init__(self,raiz):
         self.raiz = raiz
 
-    def preAnalisis(self,t,c,a,lft,lfn,lcft):
+    def preAnalisis(self,t,c,a,lft,lfn,lcft,r,r2):
         tabsim=t
         context=c
         assembler=a
@@ -19,6 +22,8 @@ class Semantico:
         lastFuncType=lft
         lastFuncName=lfn
         lastCallFType=lcft
+        ran=r
+        ran2=r2
 
         
         try:
@@ -39,6 +44,8 @@ class Semantico:
                     aux=p1+"\t"+p2+"\t"+p3
                 
                 if(regla==9):
+                    if(len(assembler) > 0):
+                        assembler.append("\tret")
                     assembler.append(p2+":")
                     lastFuncType=p1
                     lastFuncName=p2
@@ -96,7 +103,7 @@ class Semantico:
                 except: 
                     termino2=self.obtFType(lastCallFType)
 
-
+                
                 if(termino2.getLexema() == "true" or termino2.getLexema() == "false"):
                     type1="bool"
                     error2=0
@@ -114,6 +121,19 @@ class Semantico:
                             if(termino2.getLexema()[0] == '"'):
                                 type2="string"
                                 error2=0
+                
+                #Assembler
+                written=True
+                if(type2 == "int" or type2 == "float" or type2 == "string"):
+                    assembler.append("\tmov "+termino1.getLexema()+","+termino2.getLexema())
+                elif(type2 == "bool"):
+                    if(termino2.getLexema() == "true"):
+                        assembler.append("\tmov "+termino1.getLexema()+",1")
+                    else:
+                        assembler.append("\tmov "+termino1.getLexema()+",0")
+                else:
+                    written=False
+
                
                 for var in tabsim:
                     removedTabs = var.split("\t")
@@ -125,6 +145,12 @@ class Semantico:
                         type2=removedTabs[0]
                         context2=removedTabs[2]
                         error2=0
+                    
+                if(not written):
+                    assembler.append("\tmov ax,"+termino2.getLexema())
+                    assembler.append("\tmov "+termino1.getLexema()+",ax")
+
+
 
                 if(type1 != type2):
                     error1=2
@@ -147,6 +173,58 @@ class Semantico:
                         exception="<"+termino1.getLexema()+"> <"+termino2.getLexema()+"> Variables definidas en diferentes contextos Regla #" + str(regla)
                     return ["Error semantico en: ",exception],[],[]
                 
+            elif(regla == 22):
+                expresion = noter[0].getTerminales()[0].getLexema()
+                nodoaux = noter[0].getNoTerminales()[0]
+                r1=nodoaux.getRegla()
+                while(r1 != 52):
+                    nodoaux=nodoaux.getNoTerminales()[0]
+                    r1=nodoaux.getRegla()
+                try:    
+                    termino1=nodoaux.getNoTerminales()[0].getTerminales()[0]
+                except: 
+                    termino1=self.obtFType(lastCallFType)
+                
+                reg1=termino1.getLexema()
+
+                nodoaux = noter[0].getNoTerminales()[1]
+                r1=nodoaux.getRegla()
+                while(r1 != 52):
+                    nodoaux=nodoaux.getNoTerminales()[0]
+                    r1=nodoaux.getRegla()
+                try:    
+                    termino2=nodoaux.getNoTerminales()[0].getTerminales()[0]
+                except: 
+                    termino2=self.obtFType(lastCallFType)
+                reg2=termino2.getLexema()
+
+                assembler.append("\tmov ax,"+reg1)
+                assembler.append("\tmov bx,"+reg2)
+                assembler.append("\tcmp ax,bx")
+
+                ran = "endif"+str(''.join(random.choices(string.ascii_lowercase, k = 8)))
+                if(expresion == "=="):
+                    assembler.append("\tjne "+ran)
+                elif(expresion == "!="):
+                    assembler.append("\tje "+ran)
+                elif(expresion == "<"):
+                    assembler.append("\tjnb "+ran)
+                elif(expresion == "<="):
+                    assembler.append("\tjnbe "+ran)
+                elif(expresion == ">"):
+                    assembler.append("\tjna "+ran)
+                elif(expresion == ">="):
+                    assembler.append("\tjnae "+ran)
+
+            elif(regla == 26):
+                assembler.append("\t"+ran+":")
+            elif(regla == 27):
+                ran2 = "endelse"+str(''.join(random.choices(string.ascii_lowercase, k = 8)))
+                assembler.append("\tjmp "+ran2)
+                assembler.append("\t"+ran+":")
+            elif(regla == 19 and ran2 != " "):
+                assembler.append("\t"+ran2+":")
+            
             elif(regla == 24):
                 error1=1
                 nodoaux=noter[0]
@@ -209,14 +287,14 @@ class Semantico:
             elif (regla == 40):
                 error=1
                 id=ter[0].getLexema()
-                print(id)
+                #Assembler
                 if(id == "print"):
                     try:
                         msg = noter[0].getNoTerminales()[0].getNoTerminales()[0].getTerminales()[0].getLexema()
                     except:
                         aux='" "'
                     aux=msg+'\tprint\t'+lastFuncName
-                    assembler.append("\tlea dx,"+msg.replace('"',''))
+                    assembler.append("\tlea dx,"+msg.replace('"','').replace('-',''))
                     assembler.append("\tmov ah,9")
                     assembler.append("\tint 21h")
                     assembler.append(aux)
@@ -240,6 +318,9 @@ class Semantico:
                     if(error == 1):
                         exception="<"+id+"> Funcion no definida Regla #" + str(regla)
                         return ["Error semantico en: ",exception],[],[]
+                    
+                    #Assembler
+                    assembler.append("\tjmp "+id)
                     
 
                     for arg in args:
@@ -269,6 +350,7 @@ class Semantico:
                                         if(error == 3):
                                             exception="<"+id+"> Variable en el argumento no definida Regla #" + str(regla)
                                             return ["Error semantico en: ",exception],[],[]
+                    
                     
 
             elif (regla == 44):
@@ -444,14 +526,14 @@ class Semantico:
 
             for i in noter:
                 provis = Semantico(i)
-                tabsim,context,assembler = provis.preAnalisis(tabsim,context,assembler,lastFuncType,lastFuncName,lastCallFType)
+                tabsim,context,assembler = provis.preAnalisis(tabsim,context,assembler,lastFuncType,lastFuncName,lastCallFType,ran,ran2)
         except:
             pass
 
         return tabsim,context,assembler
 
     def analisis(self):
-        tabsim,context,assembler = self.preAnalisis([],[" "],[]," "," "," ")
+        tabsim,context,assembler = self.preAnalisis([],[" "],[]," "," "," "," "," ")
         return tabsim,assembler
     
     def obtFType(self,cadena):

@@ -1,0 +1,21 @@
+int premain(int y){
+	int x;
+	x=0;
+	y=0;
+    if(x < 0)
+    {
+	print("Es-verdad");
+    }
+    else
+    {
+	print("Es-mentira");
+    }
+    
+}
+
+void main(float a,int b){
+    int p,q;
+    p=5;
+    print("Hola-mundo");
+    premain(b);
+}
