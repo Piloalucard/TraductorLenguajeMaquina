@@ -2,20 +2,32 @@ int premain(int y){
 	int x;
 	x=0;
 	y=0;
-    if(x < 0)
+    while(x <= 0)
     {
-	print("Es-verdad");
+	
+	if(y == 0)
+	{
+		print("Y-es-0");
+		y = y + 1;
+	}
+	else
+	{
+		print("Y-no-es-0");
+		x = x + 1;
+	}
+	print("X-quiza-sigue-siendo-0-o-menor");
+	
+	
     }
-    else
-    {
-	print("Es-mentira");
-    }
+    print("X-ya-no-es-menor-que-0");
+    return x;
+
     
 }
 
 void main(float a,int b){
     int p,q;
-    p=5;
+    p=5+5;
     print("Hola-mundo");
     premain(b);
 }

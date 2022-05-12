@@ -4,35 +4,61 @@
 	.model small
 	.data
 presioneparasalir db 0ah,0dh,"Presione para salir...$"
-y dw 0
-x dw 0
-a dd 0.0
-b dw 0
-p dw 0
-q dw 0
-Esverdad db 0ah,0dh,"Es-verdad$"
-Esmentira db 0ah,0dh,"Es-mentira$"
+ypremain dw 0
+xpremain dw 0
+amain dd 0.0
+bmain dw 0
+pmain dw 0
+qmain dw 0
+Yes0 db 0ah,0dh,"Y-es-0$"
+Ynoes0 db 0ah,0dh,"Y-no-es-0$"
+Xquizsiguesiendo0omenor db 0ah,0dh,"X-quiz-sigue-siendo-0-o-menor$"
+Xyanoesmenorque0 db 0ah,0dh,"X-ya-no-es-menor-que-0$"
 Holamundo db 0ah,0dh,"Hola-mundo$"
 	.code
 premain:
-	mov x,0
-	mov y,0
-	mov ax,x
+	mov xpremain,0
+	mov ypremain,0
+	dwvthhay:
+	mov ax,xpremain
 	mov bx,0
 	cmp ax,bx
-	jnb endifvzsrectv
-	lea dx,Esverdad
+	jnbe endwhilevaghkard
+	mov ax,ypremain
+	mov bx,0
+	cmp ax,bx
+	jne endifywcivwfc
+	lea dx,Yes0
 	mov ah,9
 	int 21h
-	jmp endelseajhfcfyn
-	endifvzsrectv:
-	lea dx,Esmentira
+	mov ax,1
+	add ax,ypremain
+	mov ypremain,ax
+	jmp dwvthhay:
+	nolabelzzckivve:
+	jmp nolabeluzihyiqh
+	endifywcivwfc:
+	lea dx,Ynoes0
 	mov ah,9
 	int 21h
-	endelseajhfcfyn:
+	mov ax,1
+	add ax,xpremain
+	mov xpremain,ax
+	nolabeluzihyiqh:
+	nolabelicghvoad:
+	endelsemqtopdfd:
+	lea dx,Xquizsiguesiendo0omenor
+	mov ah,9
+	int 21h
+	endwhilevaghkard:
+	lea dx,Xyanoesmenorque0
+	mov ah,9
+	int 21h
 	ret
 main:
-	mov p,5
+	mov ax,5
+	add ax,5
+	mov pmain,ax
 	lea dx,Holamundo
 	mov ah,9
 	int 21h

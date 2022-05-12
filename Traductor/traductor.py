@@ -1,5 +1,4 @@
 from random import random
-import string   
 from lexico import Lexico
 from sintactico import Sintactico
 from semantico import Semantico
@@ -22,7 +21,7 @@ def openFiles(msg, mode):
                                  default="*.den", filetypes=['*.den', "Denisse Files"], multiple=False))
                 elif(mode == 2):
                     nombre = str(easygui.fileopenbox(
-                        msg=None, title=None, default="*.den", filetypes=['*.den'], multiple=False))
+                        msg=None, title=None, default="*.lr", filetypes=['*.lr'], multiple=False))
                 if nombre == "None":
                     print("ERROR, No abriste un archivo\nSaliendo...")
                     time.sleep(1.5)
@@ -153,13 +152,13 @@ def main():
             if(removedTabs[2] != " "):
                 toWrite=""
                 if(removedTabs[0] == "int"):
-                    toWrite = removedTabs[1]+" dw 0"
+                    toWrite = removedTabs[1]+removedTabs[2]+" dw 0"
                 elif(removedTabs[0] == "bool"):
-                    toWrite = removedTabs[1]+" db 0"
+                    toWrite = removedTabs[1]+removedTabs[2]+" db 0"
                 elif(removedTabs[0] == "string"):
-                    toWrite = removedTabs[1]+" db ?"
+                    toWrite = removedTabs[1]+removedTabs[2]+" db ?"
                 elif(removedTabs[0] == "float"):
-                    toWrite = removedTabs[1]+" dd 0.0"
+                    toWrite = removedTabs[1]+removedTabs[2]+" dd 0.0"
                 if(toWrite != ""):
                     asm.write(toWrite+'\n')
         for line in assembler:
@@ -167,7 +166,10 @@ def main():
             try:
                 if(removedTabs[1] == "print"):
                     n = removedTabs[0].replace('"','')
-                    toWrite = n.replace('-','')+" db 0ah,0dh,"+'"'+n+'$"'
+                    if(removedTabs[3] == "0"):
+                        toWrite = n.replace('-','').replace("$","")+" db 0ah,0dh,"+'"'+n+'"'
+                    else:
+                        toWrite = n.replace('-','')+" db 0ah,0dh,"+n+removedTabs[2]+',"$"'
                     asm.write(toWrite+'\n')
             except:
                 pass
@@ -198,7 +200,7 @@ def main():
             if not linea:
                 break
             print(linea,end="")
-
+        asm.close()
 
         print("")
         print("")
