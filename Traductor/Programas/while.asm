@@ -5,15 +5,15 @@
 	.data
 presioneparasalir db 0ah,0dh,"Presione para salir...$"
 imain dw 0
-i db 0ah,0dh,imain,"$"
+i db 0ah,0dh,"$"
 	.code
 main:
 	mov imain,1
-	vonfhcil:
+	lioyeuvd:
 	mov ax,imain
 	mov bx,10
 	cmp ax,bx
-	jnb endwhilevcgkuvpa
+	jnb endwhileksmlwybv
 	add imain,30h
 	lea dx,imain
 	mov ah,9
@@ -22,15 +22,17 @@ main:
 	mov ax,2
 	imul imain
 	mov imain,ax
-	jmp vonfhcil:
-	nolabelllnznoxp:
-	endwhilevcgkuvpa:
+	jmp lioyeuvd
+	nolabelvamgmkem:
+	endwhileksmlwybv:
 	ret
 start:
 	mov ax,@data
 	mov ds,ax
 	jmp main
 	lea dx,presioneparasalir
+	mov ah,9
+	int 21h
 	mov ax,4c00h
 	int 21h
 	ret

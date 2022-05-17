@@ -268,7 +268,7 @@ class Semantico:
                         elif(expresion == ">="):
                             assembler.append("\tjnae "+ran2[-1])
                         ran2.append("nolabel"+str(''.join(random.choices(string.ascii_lowercase, k = 8))))
-                        ran2.append("jmp "+ran3)
+                        ran2.append("jmp "+ran3.replace(":",""))
 
                     nodoRoot = nodoRoot.getNoTerminales()[0]
                     expresion = nodoRoot.getTerminales()[0].getLexema()
@@ -346,7 +346,7 @@ class Semantico:
                     elif(expresion == ">="):
                         assembler.append("\tjnae "+ran2[-1])
                     ran2.append("nolabel"+str(''.join(random.choices(string.ascii_lowercase, k = 8))))
-                    ran2.append("jmp "+ran3)
+                    ran2.append("jmp "+ran3.replace(":",""))
                 
 
             
@@ -357,16 +357,31 @@ class Semantico:
                 ran2.append("endelse"+str(''.join(random.choices(string.ascii_lowercase, k = 8))))
                 ran2.append("nolabel"+str(''.join(random.choices(string.ascii_lowercase, k = 8))))
                 ran2.append("nolabel"+str(''.join(random.choices(string.ascii_lowercase, k = 8))))
-                assembler.append("\tjmp "+ran2[-1])
+                assembler.append("\tjmp "+ran2[-1].replace(":",""))
                 assembler.append("\t"+ran.pop(-1)+":")
             elif(regla == 19 and len(ran2) > 0):
                 if(len(ran) == 0):
-                    assembler.append("\t"+ran2.pop(-1)+":")
-                    assembler.append("\t"+ran2.pop(-1)+":")
-                    assembler.append("\t"+ran2.pop(-1)+":")
+                    if("jmp" in ran2[-1]):
+                        assembler.append("\t"+ran2.pop(-1))
+                    else:
+                        assembler.append("\t"+ran2.pop(-1)+":")
+                    if("jmp" in ran2[-1]):
+                        assembler.append("\t"+ran2.pop(-1))
+                    else:
+                        assembler.append("\t"+ran2.pop(-1)+":")
+                    if("jmp" in ran2[-1]):
+                        assembler.append("\t"+ran2.pop(-1))
+                    else:
+                        assembler.append("\t"+ran2.pop(-1)+":")
                 else:
-                    assembler.append("\t"+ran2.pop(-1)+":")
-                    assembler.append("\t"+ran2.pop(-1)+":")
+                    if("jmp" in ran2[-1]):
+                        assembler.append("\t"+ran2.pop(-1))
+                    else:
+                        assembler.append("\t"+ran2.pop(-1)+":")
+                    if("jmp" in ran2[-1]):
+                        assembler.append("\t"+ran2.pop(-1))
+                    else:
+                        assembler.append("\t"+ran2.pop(-1)+":")
             
             elif(regla == 24):
                 error1=1
@@ -486,7 +501,7 @@ class Semantico:
                         return ["Error semantico en: ",exception],[],[]
                     
                     #Assembler
-                    assembler.append("\tjmp "+id)
+                    assembler.append("\tjmp "+id.replace(":",""))
                     
 
                     for arg in args:

@@ -169,7 +169,7 @@ def main():
                     if(removedTabs[3] == "0"):
                         toWrite = n.replace('-','').replace("$","")+" db 0ah,0dh,"+'"'+n+'"'
                     else:
-                        toWrite = n.replace('-','')+" db 0ah,0dh,"+n+removedTabs[2]+',"$"'
+                        toWrite = n.replace('-','')+' db 0ah,0dh,"$"'
                     asm.write(toWrite+'\n')
             except:
                 pass
@@ -188,6 +188,8 @@ def main():
         asm.write("\tmov ds,ax\n")
         asm.write("\tjmp main\n")
         asm.write("\tlea dx,presioneparasalir\n")
+        asm.write("\tmov ah,9\n")
+        asm.write("\tint 21h\n")
         asm.write("\tmov ax,4c00h\n")
         asm.write("\tint 21h\n")  
         asm.write("\tret\n")

@@ -12,45 +12,45 @@ pmain dw 0
 qmain dw 0
 Yes0 db 0ah,0dh,"Y-es-0$"
 Ynoes0 db 0ah,0dh,"Y-no-es-0$"
-Xquizsiguesiendo0omenor db 0ah,0dh,"X-quiz-sigue-siendo-0-o-menor$"
+Xquizasiguesiendo0omenor db 0ah,0dh,"X-quiza-sigue-siendo-0-o-menor$"
 Xyanoesmenorque0 db 0ah,0dh,"X-ya-no-es-menor-que-0$"
 Holamundo db 0ah,0dh,"Hola-mundo$"
 	.code
 premain:
 	mov xpremain,0
 	mov ypremain,0
-	dwvthhay:
+	felvxqzn:
 	mov ax,xpremain
 	mov bx,0
 	cmp ax,bx
-	jnbe endwhilevaghkard
+	jnbe endwhilebgnpkint
 	mov ax,ypremain
 	mov bx,0
 	cmp ax,bx
-	jne endifywcivwfc
+	jne endifilfzgoyw
 	lea dx,Yes0
 	mov ah,9
 	int 21h
 	mov ax,1
 	add ax,ypremain
 	mov ypremain,ax
-	jmp dwvthhay:
-	nolabelzzckivve:
-	jmp nolabeluzihyiqh
-	endifywcivwfc:
+	jmp felvxqzn
+	nolabellqgraorn:
+	jmp nolabelrhxepqty
+	endifilfzgoyw:
 	lea dx,Ynoes0
 	mov ah,9
 	int 21h
 	mov ax,1
 	add ax,xpremain
 	mov xpremain,ax
-	nolabeluzihyiqh:
-	nolabelicghvoad:
-	endelsemqtopdfd:
-	lea dx,Xquizsiguesiendo0omenor
+	nolabelrhxepqty:
+	nolabelasbhqzrw:
+	endelsegxeermxb:
+	lea dx,Xquizasiguesiendo0omenor
 	mov ah,9
 	int 21h
-	endwhilevaghkard:
+	endwhilebgnpkint:
 	lea dx,Xyanoesmenorque0
 	mov ah,9
 	int 21h
@@ -69,6 +69,8 @@ start:
 	mov ds,ax
 	jmp main
 	lea dx,presioneparasalir
+	mov ah,9
+	int 21h
 	mov ax,4c00h
 	int 21h
 	ret
