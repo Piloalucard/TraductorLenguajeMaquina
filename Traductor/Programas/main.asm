@@ -19,38 +19,38 @@ Holamundo db 0ah,0dh,"Hola-mundo$"
 premain:
 	mov xpremain,0
 	mov ypremain,0
-	felvxqzn:
+	zkvtrbvd:
 	mov ax,xpremain
 	mov bx,0
 	cmp ax,bx
-	jnbe endwhilebgnpkint
+	jnbe endwhilehezxgiwd
 	mov ax,ypremain
 	mov bx,0
 	cmp ax,bx
-	jne endifilfzgoyw
+	jne endifbctesnaa
 	lea dx,Yes0
 	mov ah,9
 	int 21h
 	mov ax,1
 	add ax,ypremain
 	mov ypremain,ax
-	jmp felvxqzn
-	nolabellqgraorn:
-	jmp nolabelrhxepqty
-	endifilfzgoyw:
+	jmp zkvtrbvd
+	nolabelncvxtqav:
+	jmp nolabeljxlccvad
+	endifbctesnaa:
 	lea dx,Ynoes0
 	mov ah,9
 	int 21h
 	mov ax,1
 	add ax,xpremain
 	mov xpremain,ax
-	nolabelrhxepqty:
-	nolabelasbhqzrw:
-	endelsegxeermxb:
+	nolabeljxlccvad:
+	nolabelohmbirjj:
+	endelsecamwhrba:
 	lea dx,Xquizasiguesiendo0omenor
 	mov ah,9
 	int 21h
-	endwhilebgnpkint:
+	endwhilehezxgiwd:
 	lea dx,Xyanoesmenorque0
 	mov ah,9
 	int 21h

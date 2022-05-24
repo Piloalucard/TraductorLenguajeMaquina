@@ -9,11 +9,11 @@ i db 0ah,0dh,"$"
 	.code
 main:
 	mov imain,1
-	lioyeuvd:
+	cvlhrnbi:
 	mov ax,imain
 	mov bx,10
 	cmp ax,bx
-	jnb endwhileksmlwybv
+	jnb endwhilempsgrmno
 	add imain,30h
 	lea dx,imain
 	mov ah,9
@@ -22,10 +22,10 @@ main:
 	mov ax,2
 	imul imain
 	mov imain,ax
-	jmp lioyeuvd
-	nolabelvamgmkem:
-	endwhileksmlwybv:
-	ret
+	jmp cvlhrnbi
+	nolabeldlrbbctx:
+	endwhilempsgrmno:
+	jmp start
 start:
 	mov ax,@data
 	mov ds,ax
