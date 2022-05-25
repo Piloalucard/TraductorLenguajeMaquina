@@ -1,58 +1,59 @@
 # Compilador/Traductor por **Gustavo Padilla V.**
-Proyecto de Seminario de Solución de Traductores de Lenguaje 2, Analizador lexico, sintactico, semantico, generación intermedia y MASM compiler.
+Proyecto de Seminario de Solución de Traductores de Lenguaje 2, Analizador léxico, sintáctico, semántico, generación intermedia y MASM compiler.
 
 ## Instrucciones para uso de traductor
-- Instalar python 3.6+
+- Instalar Python 3.6+
 - Instalar easygui en python (pip install easygui)
 - Ejecutar ./Traductor/traductor.py
 
 ### Traductor.py
-Se encarga de ser la interfaz principal en consola, aqui se mandaran a llamar los metodos para todo el analisis y la generacion de codigo. Este abre los archivo y los lee, y comienza el analisis pasandole la informacion al analizador lexico, tambien lee el archivo lr para posteriormente mandarle la informacion al analizador sintactico. Ademas, aqui se muestra toda la informacion de los analisis y el codigo ASM al final.
+Se encarga de ser la interfaz principal en consola, aquí se mandarán a llamar los métodos para todo el análisis y la generación de código. Este abre los archivo y los lee, y comienza el análisis pasándole la información al analizador léxico, también lee el archivo LR para posteriormente mandarle la información al analizador sintáctico. Además, aquí se muestra toda la información de los análisis y el código ASM al final.
+
 ![Traductor en consola](Traductor/Images/traductor.png)
 
 ### Lexico.py
-Es una clase el cual recibira una cadena que sera todo el programa a leer, y ademas tendra un indice, y estado. Este sera un automata que entrara en un bucle mientras haya caracteres que leer en la cadena recibida, posteriormente leera el caracter y dependiendo de que caracter sea, cambiara la variable de estado a otro numero, le asignara su token, lexema y tipo, y creara su valor con la clase Valor y lo cambiara al estado 20, el cual saldra del while y asi se agregara a una lista de Valores, iniciando otra vez con el automata reiniciando su estado a 0. Algo bastante similar se realiza con los lexemas como (&&) donde cuando se encuentra uno, se verifica que el siguiente sea correcto.En el caso de que sean caracteres alfa-numericos o un guion (-), o se leera completamente hasta que se encuentre otro caracter y se anadira como su token un ID, posteriormente se recorrera la lista buscando todos los de token ID para comparar si es una palabra reservada o un tipo de dato.
-![Codigo Lexico](Traductor/Images/lexico.png)
+Es una clase el cual recibirá una cadena que será todo el programa a leer, y además tendrá un índice, y estado. Este será un automata que entrara en un bucle mientras haya caracteres que leer en la cadena recibida, posteriormente leerá el carácter y dependiendo de que carácter sea, cambiara la variable de estado a otro número, le asignara su token, lexema y tipo, y creara su valor con la clase Valor y lo cambiara al estado 20, el cual saldrá del while y así se agregara a una lista de Valores, iniciando otra vez con él automata reiniciando su estado a 0. Algo bastante similar se realiza con los lexemas como (&&) donde cuando se encuentra uno, se verifica que el siguiente sea correcto. En el caso de que sean caracteres alfa-numéricos o un guion (-), o se leerá completamente hasta que se encuentre otro carácter y se añadirá como su token un ID, posteriormente se recorrerá la lista buscando todos los de token ID para comparar si es una palabra reservada o un tipo de dato.
+
+![Código Léxico](Traductor/Images/lexico.png)
 
 ### Valor.py
-Esta sera la clase que guarde un valor, su token, lexema y tipo, tendra sus seters y geters y se podra crear una cadena de el.
+Esta será la clase que guarde un valor, su token, lexema y tipo, tendrá sus seters y geters y se podrá generar una cadena de él.
 
 ### Sintactico.py
-Esta clase se encarga primero de cargar todas las reglas en una lista de reglas al leer el archivo y llenar la tabla LR para el posterior analisis.
+Esta clase se encarga primero de cargar todas las reglas en una lista de reglas al leer el archivo y llenar la tabla LR para el posterior análisis.
 
-![Codigo Decode](Traductor/Images/decode.png)
+![Código Decode](Traductor/Images/decode.png)
 
-El algoritmo del analisis es muy simple,tiene un modo y una lista que simula ser un arbol, entra a un while infinito donde se obtiene el elemento de la pila de, que inicialmente tendra un Valor auxiliar con tipo 0, el tipo sera el entero con el que el algoritmo verifique el analisis, tambien dependiendo del modo se obtendra el primer elemento de la lista de valores obtenido del lexico, si esta en modo 1 que significara que lo ultimo fue un desplazamiento, la fila sera la pila y la columna el primero de la lista de lexico, en otro caso la fila sera el penultimo de la pila y la columna el ultimo de la pila, de esta manera, con la matriz cargada se obtiene el numero con la fila y columna, si es positivo es un desplazamiento, y se apila el primero de la lista de lexico si esta en modo 1, y en cualquier modo se apila el numero actual. 
+El algoritmo del análisis es muy simple, tiene un modo y una lista que simula ser un árbol, entra a un while infinito donde se obtiene el elemento de la pila de, que inicialmente tendrá un Valor auxiliar con tipo 0, el tipo será el entero con el que el algoritmo verifique el análisis, también dependiendo del modo se obtendrá el primer elemento de la lista de valores obtenido del léxico, si está en modo 1 que significara que lo último fue un desplazamiento, la fila será la pila y la columna el primero de la lista de léxico, en otro caso la fila será el penúltimo de la pila y la columna el último de la pila, de esta manera, con la matriz cargada se obtiene el número con la fila y columna, si es positivo es un desplazamiento, y se apila el primero de la lista de léxico si está en modo 1, y en cualquier modo se apila el número actual.
 
-![Codigo Sintactico1](Traductor/Images/desp.png)
+![Código Sintáctico 1](Traductor/Images/desp.png)
 
-Si es negativo sera una regla, se obtendra su numero real, la longitud multiplicada por dos para desapilar y el nombre, posteriormente se crea un nodo y se empiezan a desapilar los valores, si el token es diferente de R y D, al nodo se le anade a su lista de terminales el elemento desapilado. Luego verifica el numero de la regla y en base a esto, toma el arbol, y desapila del arbol simulado y se los anade al nodo actual.
+Si es negativo será una regla, se obtendrá su número real, la longitud multiplicada por dos para desapilar y el nombre, posteriormente se crea un nodo y se empiezan a desapilar los valores, si el token es diferente de R y D, al nodo se le añade a su lista de terminales el elemento desapilado. Luego verifica el número de la regla y con base en esto, toma el árbol, y desapila del árbol simulado y se los añade al nodo actual.
 
-![Codigo Sintactico2](Traductor/Images/reg.png)
+![Código Sintáctico 2](Traductor/Images/reg.png)
 
-Para finalizar se le pone el numero de la regla y se anade al nodo al arbol. Y regresa al arbol.
-
+Para finalizar se le pone el número de la regla y se añade al nodo al árbol. Y regresa al árbol. 
 
 ### Regla.py
 Esta clase solo contiene el ID de la regla, la longitud al momento de sacar elementos de la pila y el nombre de la regla.
 
 ### Nodo.py
-Esta clase sera para generar el arbol de los nodos de cada regla, tendra una lista de no terminales, que sera una lista de nodos, y una lista de terminales que sera una lista de cadenas y el numero de la regla actual del nodo, tendra metodos para obtener la lista de terminales y no terminales, recorrerse, y anadir terminales, no terminales y la regla.
+Esta clase será para generar el árbol de los nodos de cada regla, tendrá una lista de no terminales, que será una lista de nodos, y una lista de terminales que será una lista de cadenas y el número de la regla actual del nodo, tendrá métodos para obtener la lista de terminales y no terminales, recorrerse, y añadir terminales, no terminales y la regla.
 
 ### Semantico.py
-Esta clase recibe un nodo que sera la raiz, este tendra una funcion de analisis y preanalisis, la de analisis se manda a llamar en el traductor, y adentro del analisis se llama la funcion preanalisis, esta funcion se llamara recursivamente al recorrerse cada nodo, empezara desde la raiz y este va leer la regla y en base a esta regla, ejecutara codigo para poder verificar todo error desde que una variable no este declarada, ya lo este, no sean del mismo tipo y contexto de declaracion y al usarse.
+Esta clase recibe un nodo que será la raíz, este tendrá una función de analisis y preanalisis, la de analisis se manda a llamar en el traductor, y adentro del analisis se llama la función preanalisis, esta funcion se llamara recursivamente al recorrerse cada nodo, empezara desde la raíz y este va a leer la regla y con base en esta regla, ejecutara código para poder verificar todo error desde que una variable no esté declarada, ya lo esté, no sean del mismo tipo y contexto de declaración y al usarse.
 
-![Codigo Semantico1](Traductor/Images/sem1.png)
+![Código Semántico 1](Traductor/Images/sem1.png) 
 
- Para esto crea un Tabsim donde se iran guardando las declaraciones y su contexto en base a esto varios metodos verifican los errores y a su vez se va generando el codigo intermedio en assembler, si es una suma hace add, si entra en un if o while hace cmp y jmp en base a que tipo son.
+ Para esto crea un Tabsim donde se irán guardando las declaraciones y su contexto, con base en esto varios métodos revisan los errores y a su vez se va generando el codigo intermedio en assembler, si es una suma hace add, si entra en un if o while hace cmp y jmp con base en que tipo son.
 
-![Codigo Semantico2](Traductor/Images/sem2.png)
+![Código Semántico 2](Traductor/Images/sem2.png)
 
-Al final regresa el Tabsim y el codigo generado en assembly como listas al traductor.
+Al final regresa el Tabsim y el código generado en assembly como listas al traductor. 
 
 ## Instrucciones para uso de MASM compiler
 - Copiar carpeta MASM dentro de la raiz de C:
-- Añadir la varable de entorno a Path C:\MASM\BIN
+- Añadir la variable de entorno a Path C:\MASM\BIN
 - Ejecutar en cmd: ml [mi_archivo.asm]
 - Correr .exe en un CPU de 32 bits
 - O correr ASM en un simulador de 8086
@@ -66,4 +67,3 @@ Al final regresa el Tabsim y el codigo generado en assembly como listas al tradu
 ![while.den](Traductor/Programas/whilecode.png)
 ![while.asm](Traductor/Programas/while.png)
 ![while.asm console](Traductor/Programas/whileonlyconsole.png)
-
